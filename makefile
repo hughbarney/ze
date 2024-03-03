@@ -6,11 +6,14 @@ CP      = cp
 MV      = mv
 RM      = rm
 
-ze : ze.c
-	$(LD) $(CFLAGS) -o ze ze.c $(LIBS)
+ze1 : ze1.c
+	$(LD) $(CFLAGS) -o ze1 ze1.c $(LIBS)
+
+ze2 : ze2.c
+	$(LD) $(CFLAGS) -o ze2 ze2.c $(LIBS)
+
+all : ze1 ze2
 
 clean:
-	-$(RM) ze ze.o
+	-$(RM) ze1 ze2
 
-install:
-	-$(CP) ze $(HOME)/bin/ze
