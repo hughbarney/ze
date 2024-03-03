@@ -266,10 +266,10 @@ as if 4 lines as below.
 ----segment 3---------
 ----segment 4---------
 
-In the Editor we also want to treat there as if they were seperate
-lines to enable cursor movement.  For example we want end_of_line()
-to take us to column 80 on segment 1 and then down() to take us
-to segments 2.
+In the Editor we also want to treat long lines as if they were
+seperate lines to enable cursor movement.  For example we want
+end_of_line() to take us to column 80 on segment 1 and then down() to
+take us to segments 2.
 
 The functions segstart and segnext enable a long line to be split up.
 
@@ -280,40 +280,40 @@ The functions segstart and segnext enable a long line to be split up.
 /* forward scan for start of logical line segment containing the finish point */
 point_t segstart(buffer_t *bp, point_t start, point_t finish)
 {
-	char_t *p;
-	int col = 0;
-	point_t pt = start;
+    char_t *p;
+    int col = 0;
+    point_t pt = start;
 
-	while (pt < finish) {
-		p = ptr(bp, pt);
-		if (*p == '\n') {
-			col = 0;
-			start = pt + 1;
-		} else if (COLS <= col) {
-			col = 0;
-			start = pt;
-		}
-		++pt;
-		col += *p == '\t' ? 8 - (col & 7) : 1;
-	}
-	return (col < COLS ? start : finish);
+    while (pt < finish) {
+        p = ptr(bp, pt);
+        if (*p == '\n') {
+            col = 0;
+            start = pt + 1;
+        } else if (COLS <= col) {
+            col = 0;
+            start = pt;
+        }
+        ++pt;
+        col += *p == '\t' ? 8 - (col & 7) : 1;
+    }
+    return (col < COLS ? start : finish);
 }
 
 /* Forward scan for start of logical line segment following 'finish' */
 point_t segnext(buffer_t *bp, point_t start, point_t finish)
 {
-	char_t *p;
-	int c = 0;
+    char_t *p;
+    int c = 0;
 
-	point_t pt = segstart(bp, start, finish);
-	for (;;) {
-		p = ptr(bp, pt);
-		if (bp->b_ebuf <= p || COLS <= c) break;
-		++pt;
-		if (*p == '\n') break;
-		c += *p == '\t' ? 8 - (c & 7) : 1;
-	}
-	return (p < bp->b_ebuf ? pt : pos(bp, bp->b_ebuf));
+    point_t pt = segstart(bp, start, finish);
+    for (;;) {
+        p = ptr(bp, pt);
+        if (bp->b_ebuf <= p || COLS <= c) break;
+        ++pt;
+        if (*p == '\n') break;
+        c += *p == '\t' ? 8 - (c & 7) : 1;
+    }
+    return (p < bp->b_ebuf ? pt : pos(bp, bp->b_ebuf));
 }
 
 /* reverse scan for start of line containing point pt */
@@ -329,15 +329,15 @@ point_t start_of_line_point(buffer_t *bp, register point_t pt)
 /* move up one screen line */
 point_t previous_line_point(buffer_t *bp, point_t pt)
 {
-	point_t pl_start = start_of_line_point(bp, pt);        // get physical line start
-	point_t ls_start = segstart(bp, pl_start, pt);         // line segment start
+    point_t pl_start = start_of_line_point(bp, pt);        // get physical line start
+    point_t ls_start = segstart(bp, pl_start, pt);         // line segment start
 
-        // is start of line segment ahead of the physical start of the line
-	if (pl_start < ls_start)                
-		pt = segstart(bp, pl_start, ls_start-1);       // get prev segment of current physical line
-	else
-		pt = segstart(bp,start_of_line_point(bp, pl_start - 1), pl_start - 1);   // get last segment of previous line physical line
-	return (pt);
+    // is start of line segment ahead of the physical start of the line
+    if (pl_start < ls_start)                
+        pt = segstart(bp, pl_start, ls_start-1);           // get prev segment of current physical line
+    else
+        pt = segstart(bp,start_of_line_point(bp, pl_start - 1), pl_start - 1);   // get last segment of previous line physical line
+    return (pt);
 }
 
 /* Move down one screen line */
